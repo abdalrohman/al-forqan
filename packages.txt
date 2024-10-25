@@ -1,7 +1,10 @@
 pkg-config
-libcairo2-dev
-python3-dev
 cmake
 build-essential
+libcairo2-dev
+python3-dev
 libffi-dev
 ffmpeg
+libpango1.0-dev
+pangocairo
+libpangocairo-1.0-0

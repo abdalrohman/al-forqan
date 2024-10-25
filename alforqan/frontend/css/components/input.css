@@ -1,0 +1,69 @@
+/* Input Fields Base Styling */
+.stTextInput > div,
+[data-testid="stNumberInputContainer"],
+.stSelectbox > div {
+    background: linear-gradient(to bottom right, rgba(31, 41, 55, 0.9), rgba(17, 24, 39, 0.9));
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    transition: all 0.2s ease;
+}
+
+/* Input Container */
+.stTextInput > div > div,
+.stNumberInput > div > div,
+.stNumberInput > div > div > div,
+.stSelectbox > div > div {
+    background: transparent;
+    color: var(--text-primary);
+}
+
+[data-testid="stNumberInputStepDown"],
+[data-testid="stNumberInputStepUp"] {
+    background: transparent;
+}
+
+/* Input Field */
+.stTextInput input,
+.stNumberInput input,
+.stSelectbox input,
+[data-baseweb="select"] > div > div {
+    background: transparent !important;
+    color: var(--text-primary) !important;
+    border: none !important;
+    padding-left: var(--spacing-md) !important;
+    font-size: 1rem !important;
+}
+
+/* Hover States */
+.stTextInput > div:hover,
+.stNumberInput > div:hover,
+.stSelectbox > div:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.1);
+}
+
+/* Focus States */
+.stTextInput > div:focus-within,
+.stNumberInput > div:focus-within,
+.stSelectbox > div:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Label Styling */
+.stTextInput label,
+.stNumberInput label,
+.stSelectbox label {
+    color: var(--text-secondary) !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    margin-bottom: var(--spacing-sm) !important;
+}
+
+/* Input Animations */
+.stTextInput,
+.stNumberInput,
+.stSelectbox {
+    animation: fadeIn 0.3s ease-out;
+}

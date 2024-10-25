@@ -1,0 +1,122 @@
+# see https://docs.astral.sh/ruff/settings/
+# see https://docs.astral.sh/ruff/configuration/
+
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".pyenv",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    ".vscode",
+    "*.ipynb",
+    "test_*.py",
+    "__pycache__",
+    "build",
+    "dist",
+]
+
+# Line length and indentation
+line-length = 140
+indent-width = 4
+
+target-version = "py311"
+
+# Ruff behavior
+fix = true
+unsafe-fixes = false
+
+# Error handling
+respect-gitignore = true
+
+[format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+docstring-code-format = true
+line-ending = "lf"                # Use LF (Unix-style) line endings
+
+[lint]
+ignore = [
+    "B018", # flake8-bugbear: Do not perform function calls in argument defaults
+    "TRY003", # tryceratops: Avoid specifying long messages for exceptions
+    "ANN204", # flake8-annotations: Missing return type annotation for public function
+    "ANN101", # flake8-annotations: Missing type annotation for self in method
+    "ANN102", # flake8-annotations: Missing type annotation for cls in method
+    "ANN401", # Dynamically typed expressions (typing.Any) are disallowed in `**kwargs`
+    "A002", # flake8-builtins: Function name should be lowercase
+    "B904", # flake8-bugbear: Within an `except` clause, raise exceptions with `raise ... from err`
+    "PLW2901", # flake8-pie: Unnecessary `else` / `elif` used after `return`, `break` or `continue`
+    "RET505", # flake8-return: Unnecessary `else` after `return`
+    "SIM105", # flake8-simplify: Use `contextlib.suppress(...)`
+    "SIM115", # flake8-simplify: Consider `with` statement for resource management
+    # The following rules are disabled due to potential conflicts with the formatter (see Ruff documentation https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules)
+    "W191", # pycodestyle: Indentation contains tabs
+    "E111", # pycodestyle: Indentation is not a multiple of four
+    "E114", # pycodestyle: Indentation is not a multiple of four (comment)
+    "E117", # pycodestyle: Over-indented
+    "D206", # pydocstyle:  1 blank line required before class docstring
+    "D300", # pydocstyle: Use """triple double quotes""" around docstrings
+    "Q000", # flake8-quotes: Change outer quotes to '
+    "Q001", # flake8-quotes: Remove unnecessary backslash escape
+    "Q002", # flake8-quotes: Remove unnecessary backslash escapes
+    "Q003", # flake8-quotes: Change outer quotes to "
+    "COM812", # flake8-commas: Multiple spaces after comma
+    "COM819", # flake8-commas: Unnecessary comma after last item in list, tuple, or dict
+    "ISC001", # isort: Imports are incorrectly sorted and/or formatted.
+    "ISC002", # isort: Imports are incorrectly sorted and/or formatted.
+    "ANN002",
+    "ANN003",
+    "F405",
+    "F403",
+    "ERA001",
+    "PLR0913",
+]
+select = [
+    "E", "F", "W", # Pycodestyle errors, Pyflakes, Pycodestyle warnings
+    "C4", "C9", # flake8-comprehensions, McCabe complexity
+    "I", # isort
+    "N", # naming conventions
+    "PLC", # flake8-plugin-utils
+#    "RUF", # Ruff-specific rules
+    "S", # String formatting and handling checks
+    "SIM", # Code simplification suggestions
+    "UP", # Unnecessary parentheses
+    "YTT", # Yet Another Type Tool
+    "B", # flake8-bugbear
+    "A", # flake8-builtins
+    "COM", # flake8-commas
+    "C4", # flake8-comprehensions
+    "DTZ", # flake8-datetimez
+    "T20", # flake8-print
+    "PT", # flake8-pytest-style
+    "RET", # flake8-return
+    "SIM", # flake8-simplify
+    "ARG", # flake8-unused-arguments
+    "ERA", # eradicate
+    "PL", # Pylint
+    "TRY", # tryceratops
+]
+fixable = ["ALL"] # Allow Ruff to automatically fix all fixable violations
+unfixable = []
+
+[lint.isort]
+force-wrap-aliases = true
+combine-as-imports = true
+force-single-line = false
+force-sort-within-sections = true
+no-sections = false
+
+required-imports = ["from __future__ import annotations"]
+known-first-party = ["alforqan"]
+known-third-party = ["numpy", "pandas", "matplotlib", "manim"]
+
+# Optionally customize the order of import sections (commented out)
+section-order = ["future", "standard-library", "first-party", "local-folder", "third-party", ]
+split-on-trailing-comma = true
+
+[lint.mccabe]
+max-complexity = 20
+
+[lint.pydocstyle]
+convention = "pep257"

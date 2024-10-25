@@ -1,0 +1,124 @@
+# Alforqan Configuration File
+# This file contains all settings for the Alforqan Quranic visualization system
+
+[package]
+# Basic package information and metadata
+name = "alforqan"
+version = "0.0.1"
+authors = ["M.Abdulrahman Alnaseer <https://github.com/abdalrohman>"]
+description = "Al-Forqan is a powerful tool for creating beautiful video visualizations of Quranic verses. It combines high-quality audio recitations with elegant typography and visual design."
+licence = "MIT"  # Project license type
+
+[settings]
+# Logging Configuration
+log_level = "DEBUG"              # Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+log_path = "./logs"            # Directory where log files will be stored
+log_filename = "alforqan.log"  # Name of the log file
+filters = ["manim"]            # List of modules/strings to filter in log messages
+
+# Log Rotation Settings
+rotation_interval = "midnight"  # When to rotate log files:
+                              # - 'midnight': Once per day at midnight
+                              # - 'h': Hourly
+                              # - 'd': Daily
+
+# Environment Configuration
+environment = "development"    # Application environment:
+                              # - 'development': Enables debug features
+                              # - 'production': Optimized for deployment
+
+[fonts]
+# Font Configuration for Text Rendering
+font_path = "assets/fonts/UthmanicHafs_v22/uthmanic_hafs_v22.ttf"  # Primary font for Quranic text
+font_info_path = "assets/fonts/Amiri/Amiri-Regular.ttf"           # Secondary font for information display
+                                                                  # Falls back to font_path if not specified
+
+# Font Size Settings (in points)
+font_size = 36        # Size of the main Quranic text
+info_font_size = 24   # Size of supplementary information text
+
+[quran_data]
+# Quranic Data Source Configuration
+json_data_file = "assets/quran_data/hafsData_v2-0.json"  # Path to the JSON file containing verse data
+                                                         # Must follow the specified schema format
+
+[background]
+# Background Style Configuration
+# Available styles:
+# - solid: Solid color background
+# - gradient: Gradient color effect
+# - star_motif_geometric: Islamic geometric pattern with star motifs
+# - geometric_stars: Regular geometric star pattern
+# - grid: Simple grid pattern
+# - diagonal_square: Diagonal squares pattern
+# - diagonal_square_dots: Diagonal squares with dots
+# - diagonal_points: Diagonal point pattern
+# - diamond_dots: Diamond-shaped dot pattern
+# - hexagonal: Hexagonal tile pattern
+background = "star_motif_geometric"
+
+[color_scheme]
+# Visual Theme Configuration
+# Available color schemes:
+# - desert_sunset: Rich earthy progression from deep bronze (#B76E22)
+#                 through golden yellows (#C69749, #E3C770) to warm cream (#EAD7BB)
+#
+# - mosque_azure: Deep teal (#006C67) flowing through vibrant turquoise (#00A9A5)
+#                to soft sky blues (#90E0EF, #CAF0F8)
+#
+# - golden_dome: Classical progression from bronze (#916A3D) through
+#               rich golds (#C4A962, #DAC585) to pale cream (#F0E6C8)
+#
+# - arabesque: Sophisticated blend from deep teal (#1F4E5F) through
+#             sage green (#5B8A72) to gentle cream (#BAC7A7, #E5E4CC)
+#
+# - prayer_night: Serene nighttime blues from deep navy (#0A2342) through
+#                royal blues (#2C4A7F, #537EC5) to soft periwinkle (#89A7E0)
+#
+# - calligraphy: Classic monochromatic scale from deep slate (#2C3E50)
+#               through medium grays (#34495E, #5D6D7E) to light gray (#85929E)
+#
+# - persian_garden: Lush greens from deep forest (#2A6041) through
+#                  medium sage (#4B8063, #89B6A5) to mint (#C4E3D7)
+#
+# - andalusian: Rich purple (#7B4B94) flowing through mauve (#9B6B9E)
+#              to soft lilac (#BB8FA9, #DDC4DD)
+#
+# - damascus_morning: Warm sunrise colors from deep orange (#D68438) through
+#                    golden yellows (#E4A853, #F2CC8F) to pale peach (#FAE6BE)
+#
+# - medina_evening: Deep royal purple (#553772) through twilight violet (#674EA7)
+#                  to soft lavender (#9B8ABA, #C3B7D9)
+#
+# - ottoman_royal: Bold crimson (#8C1C13) with deep red (#BF4342) transitioning
+#                 to warm cream (#E7D7C1, #F4E6CC)
+#
+# - prophetic_green: Deep forest green (#0B4619) through emerald (#1B6B3C)
+#                   to soft sage (#4E9B5E, #8FBC94)
+#
+# - kaaba_black: Elegant grayscale from pure black (#191919) through
+#               dark (#2D2D2D) and medium grays (#4D4D4D, #808080)
+#
+# - islamic_manuscript: Traditional manuscript colors from saddle brown (#8B4513)
+#                      through copper (#BC7642) to wheat (#DEB887, #F5DEB3)
+color_scheme = "prayer_night"
+
+[scene_settings]
+# Output and Rendering Configuration
+mode = "video"        # Output mode:
+                     # - video: Generate video output
+                     # - image: Generate static image
+
+aspect_ratio = "16:9"  # Video/Image aspect ratio options:
+                      # - 16:9: Widescreen format
+                      # - 4:3: Standard format
+                      # - 1:1: Square format
+                      # - 9:16: Vertical video format
+                      # - 12:12: Large square format
+
+quality = "medium_quality"  # Rendering quality presets:
+                          # - fourk_quality: 4K resolution
+                          # - production_quality: High bitrate, production ready
+                          # - high_quality: High resolution and bitrate
+                          # - medium_quality: Balanced quality/performance
+                          # - low_quality: Fast rendering, lower quality

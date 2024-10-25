@@ -1,0 +1,101 @@
+/* Video Container Styles */
+.stVideo {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    background: var(--bg-card);
+    box-shadow: var(--box-shadow);
+    transition: transform 0.2s ease;
+    will-change: transform;
+}
+
+/* Vertical Video Optimization */
+.stVideo[data-orientation="vertical"] {
+    aspect-ratio: 9/16;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Video Player Enhancements */
+.stVideo video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: var(--bg-dark);
+}
+
+/* Video Controls Styling */
+.stVideo:hover .controls {
+    opacity: 1;
+}
+
+.controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    padding: var(--spacing-sm);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+
+/* Loading State */
+.stVideo.loading::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.stVideo.loading::after {
+    content: '';
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--primary-color);
+    border-top-color: transparent;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: spin 1s linear infinite;
+    z-index: 2;
+}
+
+@keyframes spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* Performance Optimizations */
+@media (prefers-reduced-motion: reduce) {
+    .stVideo,
+    .controls {
+        transition: none;
+    }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .video-metadata {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .metadata-item {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

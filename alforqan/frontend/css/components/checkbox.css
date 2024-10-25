@@ -1,0 +1,38 @@
+/* Checkbox Container */
+.stCheckbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin: var(--spacing-sm) 0;
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Label Container */
+.stCheckbox > label {
+    display: flex;
+    align-items: center;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    gap: var(--spacing-sm);
+    padding-left: var(--spacing-md) !important;
+}
+
+/* Custom Checkbox Design */
+.stCheckbox > label > span {
+    width: 24px;
+    height: 24px;
+    background-color: linear-gradient(to bottom right, rgba(31, 41, 55, 0.9), rgba(17, 24, 39, 0.9));
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+}
+
+/* Hover State */
+.stCheckbox > label > span:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.1);
+    border-color: var(--primary-color);
+}

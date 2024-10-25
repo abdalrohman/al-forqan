@@ -1,0 +1,22 @@
+# Dev requirements
+ruff
+mypy
+
+# Project requirements
+manim~=0.18.1
+streamlit
+ffmpeg
+requests~=2.32.3
+Wand
+mutagen
+click
+pygame~=2.6.1
+numpy~=1.26.4
+pydantic~=2.9.2
+structlog~=24.4.0
+fonttools~=4.54.1
+librosa
+
+urllib3~=2.2.3
+toml~=0.10.2
+pyyaml~=6.0.2

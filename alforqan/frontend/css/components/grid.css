@@ -1,0 +1,12 @@
+.grid {
+    display: grid;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-md) 0;
+}
+
+.grid--features,
+.grid--stats,
+.grid--queue,
+.grid--info {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}

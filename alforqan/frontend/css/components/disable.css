@@ -1,0 +1,5 @@
+/* Hide deploy button and decoration */
+[data-testid="stAppDeployButton"],
+[data-testid="stDecoration"] {
+  display: none;
+}

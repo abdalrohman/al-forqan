@@ -231,7 +231,7 @@ class QuranVerseScene(BaseBackgroundScene):
         font_path = self.font_path if is_verse else self.font_path_info
         font_helper = FontHelper(str(font_path))
         if self.font_path:
-            with register_font(self.font_path):
+            with register_font(font_path):
                 normalized_text = font_helper.process_text(text) if font_helper else text
                 return Text(normalized_text, font=font_helper.get_font_name(), font_size=font_size, color=color)
         else:

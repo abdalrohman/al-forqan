@@ -1,3 +1,7 @@
 pkg-config
 libcairo2-dev
 python3-dev
+cmake
+build-essential
+libffi-dev
+ffmpeg

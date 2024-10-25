@@ -1,0 +1,12 @@
+{
+    "name": "Al-Forqan Development Environment",
+    "image": "mcr.microsoft.com/devcontainers/python:3.11",
+
+    // Install required system dependencies for Manim and other packages
+    "postCreateCommand": "sudo apt-get update && sudo apt-get install -y pkg-config cmake build-essential libcairo2-dev python3-dev libffi-dev ffmpeg g libpango1.0-dev libglib2.0-dev libpangocairo-1.0-0 && pip install --upgrade pip && pip install -r requirements.txt",
+
+    "features": {
+        "ghcr.io/devcontainers/features/git:1": {},
+        "ghcr.io/devcontainers/features/github-cli:1": {}
+    }
+}

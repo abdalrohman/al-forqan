@@ -11,7 +11,7 @@ licence = "MIT"  # Project license type
 
 [settings]
 # Logging Configuration
-log_level = "DEBUG"              # Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+log_level = "INFO"              # Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
 log_path = "./logs"            # Directory where log files will be stored
 log_filename = "alforqan.log"  # Name of the log file
 filters = ["manim"]            # List of modules/strings to filter in log messages
@@ -23,7 +23,7 @@ rotation_interval = "midnight"  # When to rotate log files:
                               # - 'd': Daily
 
 # Environment Configuration
-environment = "development"    # Application environment:
+environment = "production"    # Application environment:
                               # - 'development': Enables debug features
                               # - 'production': Optimized for deployment
 

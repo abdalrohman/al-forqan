@@ -143,7 +143,7 @@ class QuranVerseScene(BaseBackgroundScene):
         """Set Manim configuration based on output mode."""
         config.flush_cache = False
         config.verbosity = "INFO"
-        config.renderer = "opengl"
+        config.renderer = "cairo"
         config.disable_caching = True  # disable caching to speed up the rendering time
         config.disable_caching_warning = True
         config.media_dir = self.output_dir if self.output_dir is not None else config.media_dir

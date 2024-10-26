@@ -8,6 +8,7 @@ from __future__ import annotations
 from datetime import datetime
 import io
 from pathlib import Path
+from typing import Literal
 
 from alforqan.frontend.custom_component.cards import create_iconic_card
 from alforqan.frontend.custom_component.data_display import create_metrics_grid
@@ -15,21 +16,37 @@ from alforqan.frontend.custom_component.header import create_header_section
 
 import streamlit as st
 
+MediaType = Literal["video", "image"]
 
-def get_video_data(video_path: Path) -> tuple:
-    """Helper function to get video data efficiently"""
-    stats = video_path.stat()
+SUPPORTED_VIDEO_FORMATS = {".mp4", ".mov", ".webm"}
+SUPPORTED_IMAGE_FORMATS = {".png"}
+
+
+def get_media_type(file_path: Path) -> MediaType:
+    """Determine if the file is a video or image based on extension"""
+    suffix = file_path.suffix.lower()
+    if suffix in SUPPORTED_VIDEO_FORMATS:
+        return "video"
+    elif suffix in SUPPORTED_IMAGE_FORMATS:
+        return "image"
+    raise ValueError(f"Unsupported file format: {suffix}")
+
+
+def get_media_data(media_path: Path) -> tuple:
+    """Helper function to get media file data efficiently"""
+    stats = media_path.stat()
     file_size = stats.st_size / (1024 * 1024)  # Convert to MB
     modified_time = datetime.fromtimestamp(stats.st_mtime).strftime("%Y-%m-%d %H:%M")
-    return file_size, modified_time
+    media_type = get_media_type(media_path)
+    return file_size, modified_time, media_type
 
 
-def read_video_bytes(video_path: Path) -> io.BytesIO:
-    """Efficiently read video file into memory"""
+def read_media_bytes(media_path: Path) -> io.BytesIO:
+    """Efficiently read media file into memory"""
     buffer = io.BytesIO()
     chunk_size = 8192  # 8KB chunks for efficient memory usage
 
-    with open(video_path, "rb") as file:
+    with open(media_path, "rb") as file:
         while True:
             chunk = file.read(chunk_size)
             if not chunk:
@@ -40,23 +57,31 @@ def read_video_bytes(video_path: Path) -> io.BytesIO:
     return buffer
 
 
-def display_video_gallery(output_directory):
-    """Display generated videos in an enhanced grid layout with metadata and actions"""
-    videos = list(output_directory.glob("*.mp4"))
+def display_media_gallery(output_directory: Path):
+    """Display generated videos and images in an enhanced grid layout with metadata and actions"""
+    # Find all supported media files
+    media_files = []
+    for format_group in [SUPPORTED_VIDEO_FORMATS, SUPPORTED_IMAGE_FORMATS]:
+        for ext in format_group:
+            media_files.extend(output_directory.glob(f"*{ext}"))
 
     # Header section with stats
-    create_header_section("Video Gallery", "Browse and manage your generated visualizations")
+    create_header_section("Media Gallery", "Browse and manage your generated visualizations")
 
-    if not videos:
-        create_iconic_card("🎬", "No Videos Yet", "Generated videos will appear here. Start by creating your first visualization!")
+    if not media_files:
+        create_iconic_card(
+            "🎬", "No Media Files Yet", "Generated videos and images will appear here. Start by creating your first visualization!"
+        )
         return
 
     # Calculate statistics
-    total_videos = len(videos)
-    total_size = sum(video.stat().st_size for video in videos) / (1024 * 1024)
+    total_files = len(media_files)
+    total_size = sum(file.stat().st_size for file in media_files) / (1024 * 1024)
+    video_count = sum(1 for f in media_files if get_media_type(f) == "video")
+    image_count = sum(1 for f in media_files if get_media_type(f) == "image")
 
-    if videos:
-        modification_times = [video.stat().st_mtime for video in videos]
+    if media_files:
+        modification_times = [file.stat().st_mtime for file in media_files]
         newest = max(modification_times)
         oldest = min(modification_times)
         days_active = (newest - oldest) / 86400
@@ -64,41 +89,51 @@ def display_video_gallery(output_directory):
         days_active = 0
 
     gallery_stats = [
-        {"label": "Total Videos", "value": total_videos},
+        {"label": "Total Files", "value": total_files},
+        {"label": "Videos", "value": video_count},
+        {"label": "Images", "value": image_count},
         {"label": "Total Size (MB)", "value": f"{total_size:.1f}"},
         {"label": "Days Active", "value": f"{days_active:.1f}"},
     ]
     create_metrics_grid(gallery_stats)
 
-    # Sort videos by creation time (newest first)
-    videos.sort(key=lambda x: x.stat().st_mtime, reverse=True)
+    # Sort files by creation time (newest first)
+    media_files.sort(key=lambda x: x.stat().st_mtime, reverse=True)
 
     # Grid layout with caching for performance
     @st.cache_data(ttl=3600, show_spinner=False)  # Cache for 1 hour
-    def get_cached_video_data(video_path: Path):
-        return get_video_data(video_path)
+    def get_cached_media_data(media_path: Path):
+        return get_media_data(media_path)
 
-    # Display videos in grid
-    num_videos = len(videos)
-    cols_per_row = min(3, num_videos)
+    # Display media files in grid
+    num_files = len(media_files)
+    cols_per_row = min(3, num_files)
 
-    for i in range(0, num_videos, cols_per_row):
+    for i in range(0, num_files, cols_per_row):
         cols = st.columns(cols_per_row)
         for j, col in enumerate(cols):
-            if i + j < num_videos:
+            if i + j < num_files:
                 with col:
-                    video_path = videos[i + j]
-                    file_size, modified_time = get_cached_video_data(video_path)
+                    media_path = media_files[i + j]
+                    file_size, modified_time, media_type = get_cached_media_data(media_path)
 
-                    # Video player
-                    st.video(str(video_path))
+                    # Display media based on type
+                    if media_type == "video":
+                        st.video(str(media_path))
+                    else:  # image
+                        st.image(str(media_path), use_column_width=True)
 
+                    # Display metadata
                     st.markdown(
                         f"""
-                        <div class="video-metadata">
+                        <div class="media-metadata">
                             <div class="metadata-item">
                                 <span class="metadata-label">Name:</span>
-                                <span class="metadata-value">{video_path.stem[:20]}...</span>
+                                <span class="metadata-value">{media_path.stem[:10]}...</span>
+                            </div>
+                            <div class="metadata-item">
+                                <span class="metadata-label">Type:</span>
+                                <span class="metadata-value">{media_type.capitalize()}</span>
                             </div>
                             <div class="metadata-item">
                                 <span class="metadata-label">Size:</span>
@@ -112,12 +147,13 @@ def display_video_gallery(output_directory):
                         """,
                         unsafe_allow_html=True,
                     )
-                    video_bytes = read_video_bytes(video_path)
+                    # Download button
+                    media_bytes = read_media_bytes(media_path)
                     st.download_button(
                         "Download",
-                        video_bytes,
-                        file_name=f"{video_path.stem}.mp4",
-                        key=f"download_{video_path.stem}",
+                        media_bytes,
+                        file_name=f"{media_path.name}",
+                        key=f"download_{media_path.stem}",
                         use_container_width=True,
                         icon="⬇️",
                     )

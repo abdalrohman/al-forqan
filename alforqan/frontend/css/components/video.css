@@ -1,5 +1,6 @@
 /* Video Container Styles */
-.stVideo {
+.stVideo,
+.stImage {
     position: relative;
     width: 100%;
     aspect-ratio: 16/9;
@@ -11,19 +12,28 @@
     will-change: transform;
 }
 
-/* Vertical Video Optimization */
-.stVideo[data-orientation="vertical"] {
-    aspect-ratio: 9/16;
-    max-width: 400px;
-    margin: 0 auto;
-}
-
 /* Video Player Enhancements */
 .stVideo video {
     width: 100%;
     height: 100%;
     object-fit: cover;
     background: var(--bg-dark);
+}
+
+/* Image Styles */
+.stImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: var(--bg-dark);
+}
+
+/* Image specific styles */
+.stImage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0.5rem;
 }
 
 /* Video Controls Styling */
@@ -44,7 +54,8 @@
 
 
 /* Loading State */
-.stVideo.loading::before {
+.stVideo.loading::before,
+.stImage.loading::before {
     content: '';
     position: absolute;
     top: 0;
@@ -58,7 +69,8 @@
     z-index: 1;
 }
 
-.stVideo.loading::after {
+.stVideo.loading::after,
+.stImage.loading::after {
     content: '';
     width: 40px;
     height: 40px;
@@ -73,6 +85,12 @@
     z-index: 2;
 }
 
+.stVideo:hover,
+.stImage:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow-lg);
+}
+
 @keyframes spin {
     to {
         transform: translate(-50%, -50%) rotate(360deg);
@@ -82,6 +100,7 @@
 /* Performance Optimizations */
 @media (prefers-reduced-motion: reduce) {
     .stVideo,
+    .stImage,
     .controls {
         transition: none;
     }

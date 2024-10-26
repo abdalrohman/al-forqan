@@ -81,7 +81,10 @@ def generate_video(
             progress_bar.progress(1.0, text="✨ Render complete!")
 
             # Move output file
-            output_file = temp_directory / Path("video_dir") / f"{verse_range.output_filename}.mp4"
+            if visualization_config["mode"] == "video":
+                output_file = temp_directory / Path("video_dir") / f"{verse_range.output_filename}.mp4"
+            else:
+                output_file = temp_directory / Path("images_dir") / f"{verse_range.output_filename}.png"
             if output_file.exists():
                 shutil.move(str(output_file), str(output_directory / output_file.name))
                 return True

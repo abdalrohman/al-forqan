@@ -17,7 +17,7 @@ from alforqan.frontend.get_verse_info import get_verse_info
 from alforqan.frontend.process_audio import process_audio_files
 from alforqan.frontend.process_verses import display_processing_queue, verse_processor
 from alforqan.frontend.tabs.about import display_about_section
-from alforqan.frontend.tabs.gallery import display_video_gallery
+from alforqan.frontend.tabs.gallery import display_media_gallery
 from alforqan.frontend.tabs.input_tab import input_tab
 
 import streamlit as st
@@ -74,9 +74,9 @@ apply_global_styles("alforqan/frontend/css/components/video.css")
 st.markdown(
     """
     <div class="header-container">
-        <h1 class="app-title">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيم</h1> 
+        <h1 class="app-title">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيم</h1>
         <p class="app-description">
-            <span class="highlight">Al-Forqan</span>: Transform Quranic verses into stunning visual experiences with professional-grade 
+            <span class="highlight">Al-Forqan</span>: Transform Quranic verses into stunning visual experiences with professional-grade
             video generation and customizable styles
         </p>
     </div>
@@ -118,6 +118,7 @@ def cleanup_temporary_files():
 visualization_config = {}
 
 
+# TODO generate the audio based on the media type
 def main():
     """Main application logic with enhanced UI organization"""
     # Create main application sections
@@ -165,7 +166,7 @@ def main():
                 show_info("No pending verses to process")
 
     with tabs[2]:
-        display_video_gallery(output_directory)
+        display_media_gallery(output_directory)
 
     with tabs[3]:
         display_about_section(app_config)

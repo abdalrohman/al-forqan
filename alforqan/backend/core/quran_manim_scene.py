@@ -20,8 +20,6 @@ Requirements:
 
 from __future__ import annotations
 
-import manimpango
-
 __all__ = ["QuranVerseScene"]
 
 from datetime import datetime
@@ -75,7 +73,8 @@ class QuranVerseScene(BaseBackgroundScene):
         self._background_style = kwargs.get("background_style", BackgroundStyle.STAR_MOTIF_GEOMETRIC)
         self._color_scheme = kwargs.get("color_scheme", ColorScheme.PRAYER_NIGHT)
         self._gradient = kwargs.get("gradient", True)
-        self._gradient_direction = kwargs.get("gradient_direction", UP)
+        self._gradient_direction = kwargs.get("gradient_direction")
+        self._gradient_intensity = kwargs.get("gradient_intensity")
 
         # Initialize default values
         self.verses = verses
@@ -104,6 +103,7 @@ class QuranVerseScene(BaseBackgroundScene):
             background_style=self._background_style,
             color_scheme=COLOR_SCHEMES[self._color_scheme],
             gradient_direction=self._gradient_direction,
+            gradient_intensity=self._gradient_intensity,
             gradient=self._gradient,
         )
 

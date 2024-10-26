@@ -5,6 +5,8 @@
 
 from __future__ import annotations
 
+from alforqan.backend.core.backgrounds.gradient_direction import ManimDirections
+
 from .config import BackgroundStyle, PatternConfig
 from .patterns import (
     DiagonalPoints,
@@ -18,7 +20,10 @@ from .patterns import (
 )
 
 from manim import *
-from manim import UP, Rectangle, Scene, VGroup
+from manim import Rectangle, Scene, VGroup
+import structlog
+
+logger = structlog.getLogger(__name__)
 
 
 class BackgroundManager:
@@ -40,23 +45,62 @@ class BackgroundManager:
         self,
         style: BackgroundStyle,
         color_scheme: list,
-        gradient_direction: np.ndarray = UP,
-        gradient: bool = True,
-        pattern_config: PatternConfig | None = None,
+        gradient_direction: str,
+        gradient_intensity: float,
+        gradient: bool,
+        pattern_config: PatternConfig,
     ) -> VGroup:
         """Create a complete background."""
         background = VGroup()
 
-        # Create base background
-        base = Rectangle(
-            width=config.frame_width,
-            height=config.frame_height,
-            fill_color=color_scheme[:3] if gradient else color_scheme[0],
-            fill_opacity=1,
-            sheen_direction=gradient_direction if gradient else None,
-            stroke_width=0,
+        gradient_intensity = max(0.0, min(1.0, gradient_intensity))  # Clamp between 0 and 1
+        gradient_direction = ManimDirections().get_direction_vector(gradient_direction)
+        logger.info(
+            "Background settings",
+            gradient=gradient,
+            gradient_direction=gradient_direction,
+            gradient_intensity=gradient_intensity,
+            color_scheme=color_scheme,
+            style=style,
         )
+
+        # Create base background with gradient
+        if gradient:
+            # Use only the first color as base and let sheen create the gradient effect
+            base = Rectangle(
+                width=config.frame_width,
+                height=config.frame_height,
+                fill_color=color_scheme[0],  # Use first color as base
+                fill_opacity=1,
+                sheen_factor=gradient_intensity,  # This controls the gradient intensity
+                sheen_direction=gradient_direction,
+                stroke_width=0,
+            )
+        else:
+            # Solid color without gradient
+            base = Rectangle(
+                width=config.frame_width,
+                height=config.frame_height,
+                fill_color=color_scheme[0],
+                fill_opacity=1,
+                stroke_width=0,
+            )
+
         background.add(base)
+
+        # For multi-color gradients, add additional layers with transparency
+        if gradient and len(color_scheme) > 1:
+            for i, color in enumerate(color_scheme[1:3], 1):  # Use up to 2 additional colors
+                overlay = Rectangle(
+                    width=config.frame_width,
+                    height=config.frame_height,
+                    fill_color=color,
+                    fill_opacity=0.3 / i,  # Decreasing opacity for each layer
+                    sheen_factor=gradient_intensity - 0.1,
+                    sheen_direction=gradient_direction,
+                    stroke_width=0,
+                )
+                background.add(overlay)
 
         # Add pattern if style is not basic
         if style not in [BackgroundStyle.SOLID, BackgroundStyle.GRADIENT]:
@@ -79,22 +123,25 @@ class BaseBackgroundScene(Scene):
         self.background_manager = BackgroundManager()
         self.background_style: BackgroundStyle | None = None
         self.color_scheme: list | None = None
-        self.gradient_direction: np.ndarray = UP
+        self.gradient_direction: str | None = None
+        self.gradient_intensity: float | None = None
         self.gradient: bool = True
         self.pattern_config: PatternConfig | None = None
 
     def initialize_background(
         self,
-        background_style: BackgroundStyle = BackgroundStyle.DIAMOND_DOTS,
-        color_scheme: list | None = None,
-        gradient_direction: np.ndarray = UP,
-        gradient: bool = True,
+        background_style: BackgroundStyle,
+        color_scheme: list,
+        gradient_direction: str,
+        gradient_intensity: float,
+        gradient: bool,
         pattern_config: PatternConfig | None = None,
     ):
         """Initialize background."""
         self.background_style = background_style
         self.color_scheme = color_scheme
         self.gradient_direction = gradient_direction
+        self.gradient_intensity = gradient_intensity
         self.gradient = gradient
         self.pattern_config = pattern_config or PatternConfig()
 
@@ -106,7 +153,12 @@ class BaseBackgroundScene(Scene):
             raise ValueError("Color scheme not provided. Initialize with valid colors.")
 
         background = self.background_manager.create_background(
-            self.background_style, self.color_scheme, self.gradient_direction, self.gradient, self.pattern_config
+            style=self.background_style,
+            color_scheme=self.color_scheme,
+            gradient_direction=self.gradient_direction,
+            gradient=self.gradient,
+            pattern_config=self.pattern_config,
+            gradient_intensity=self.gradient_intensity,
         )
         self.add(background)
 

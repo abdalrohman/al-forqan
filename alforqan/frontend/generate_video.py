@@ -14,7 +14,6 @@ from alforqan.backend.core.quran_manim_scene import QuranVerseScene
 from alforqan.backend.utils.font_helper import FontHelper
 from alforqan.frontend.custom_component.status import *
 
-from manim import ORIGIN
 import streamlit as st
 
 
@@ -58,8 +57,6 @@ def generate_video(
                 durations=final_durations,
                 background_style=BackgroundStyle(visualization_config["background"]),
                 color_scheme=ColorScheme(visualization_config["color_scheme"]),
-                gradient=visualization_config["gradient"],
-                gradient_direction=ORIGIN,
                 font_path=app_config.get("fonts.font_path"),
                 mode=visualization_config["mode"],
                 aspect_ratio=visualization_config["aspect_ratio"],
@@ -68,6 +65,9 @@ def generate_video(
                 quality=visualization_config["video_quality"],
                 output_dir=str(temp_directory),
                 output_file=verse_range.output_filename,
+                gradient=visualization_config["gradient"],
+                gradient_direction=visualization_config["gradient_direction"],
+                gradient_intensity=visualization_config["gradient_intensity"],
             )
 
             progress_bar.progress(0.5, text="Scene created, starting render...")

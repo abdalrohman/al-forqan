@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from alforqan.backend.core.backgrounds import BackgroundStyle
+from alforqan.backend.core.backgrounds.gradient_direction import ManimDirections
 from alforqan.backend.core.color_scheme import ColorScheme
 from alforqan.backend.utils.utils import sanitize_name
 from alforqan.frontend.custom_component.step_header import create_stp_header
@@ -96,6 +97,30 @@ def input_tab(app_config, visualization_config):
         help="Apply a gradient effect to the text",
     )
     visualization_config["gradient"] = enable_gradient
+    if enable_gradient:
+        dir_col, inten_col = st.columns(2)
+        with dir_col:
+            directions = ManimDirections().get_streamlit_options()
+
+            # Define a format function to display the second element of the tuple
+            def format_direction(x):
+                return x[1]  # Return the description part of the tuple
+
+            gradient_direction = st.selectbox(
+                "Gradient Directions",
+                options=directions,
+                format_func=format_direction,
+                index=1,
+            )
+            gradient_direction = gradient_direction[0]  # Get just the direction name
+        with inten_col:
+            gradient_intensity = st.slider("Gradient intensity", min_value=0.0, max_value=1.0, value=0.3)
+        visualization_config.update(
+            {
+                "gradient_direction": gradient_direction,
+                "gradient_intensity": gradient_intensity,
+            }
+        )
 
     # Advanced configuration options
     aspect_ratios = ["16:9", "9:16", "4:3", "1:1", "12:12"]

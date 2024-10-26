@@ -90,6 +90,7 @@ class QuranVerseScene(BaseBackgroundScene):
         self.quality = kwargs.get("quality", "high_quality")
         self.output_dir = kwargs.get("output_dir")
         self.output_file = kwargs.get("output_file")
+        self.renderer: str = kwargs.get("renderer", "cairo")
 
         self._validate_inputs()
         self._configure_output()
@@ -145,7 +146,7 @@ class QuranVerseScene(BaseBackgroundScene):
         """Set Manim configuration based on output mode."""
         config.flush_cache = False
         config.verbosity = "INFO"
-        config.renderer = "cairo"
+        config.renderer = self.renderer
         config.disable_caching = True  # disable caching to speed up the rendering time
         config.disable_caching_warning = True
         config.media_dir = self.output_dir if self.output_dir is not None else config.media_dir

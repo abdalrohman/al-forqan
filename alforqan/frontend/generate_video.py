@@ -68,6 +68,7 @@ def generate_video(
                 gradient=visualization_config["gradient"],
                 gradient_direction=visualization_config["gradient_direction"],
                 gradient_intensity=visualization_config["gradient_intensity"],
+                renderer=visualization_config["renderer"],
             )
 
             progress_bar.progress(0.5, text="Scene created, starting render...")
@@ -76,7 +77,7 @@ def generate_video(
                 label="""Generating final video...""",
             )
 
-            scene.render(preview=visualization_config["preview"])
+            scene.render()
             progress_bar.progress(1.0, text="✨ Render complete!")
 
             # Move output file

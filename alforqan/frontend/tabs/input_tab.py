@@ -14,6 +14,9 @@ from alforqan.frontend.process_verses import QuranicVerseRange, fetch_available_
 
 from manim import constants
 import streamlit as st
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 def input_tab(app_config, visualization_config):
@@ -142,13 +145,18 @@ def input_tab(app_config, visualization_config):
                 index=aspect_ratios.index(app_config.get("scene_settings.aspect_ratio")),
                 help="Select the video dimensions ratio",
             )
-        # FIX: Need to be fixed, because when change the media dir this not work properly
-        enable_preview = st.checkbox("Enable Preview", value=False, help="Show preview during processing")
+        renderer = st.selectbox(
+            "Choose the renderer",
+            ["cairo", "opengl"],
+            help="Select 'opengl' for better performance on compatible systems. Default 'cairo' works on all systems but may be slower.",
+        )
+        logger.info("Chosen renderer", renderer=renderer)
+
         visualization_config.update(
             {
                 "mode": output_mode,
                 "aspect_ratio": video_ratio,
-                "preview": enable_preview,
+                "renderer": renderer,
             }
         )
 

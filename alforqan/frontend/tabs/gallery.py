@@ -98,7 +98,7 @@ def display_video_gallery(output_directory):
                         <div class="video-metadata">
                             <div class="metadata-item">
                                 <span class="metadata-label">Name:</span>
-                                <span class="metadata-value">{video_path.stem}</span>
+                                <span class="metadata-value">{video_path.stem[:20]}...</span>
                             </div>
                             <div class="metadata-item">
                                 <span class="metadata-label">Size:</span>

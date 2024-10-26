@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from alforqan.backend.core.backgrounds import BackgroundStyle
 from alforqan.backend.core.color_scheme import ColorScheme
+from alforqan.backend.utils.utils import sanitize_name
 from alforqan.frontend.custom_component.step_header import create_stp_header
 from alforqan.frontend.process_verses import QuranicVerseRange, fetch_available_reciters, verse_processor
 
@@ -138,7 +139,16 @@ def input_tab(app_config, visualization_config):
                 surah_number=surah_number,
                 start_verse=verse_start,
                 end_verse=verse_end,
-                output_filename=f"{reciter_id}_{surah_number}_{verse_start}_{verse_end}",
+                output_filename=(
+                    f"{sanitize_name(selected_reciter_name)}_"
+                    f"surah_{surah_number:03d}_"
+                    f"verse_{verse_start:03d}"
+                    f"{f'_to_{verse_end:03d}' if verse_end != verse_start else ''}"
+                    f"_{background_style}"
+                    f"_{color_theme}"
+                    f"_{render_quality}"
+                    f"_{video_ratio}"
+                ),
             )
 
             if verse_processor.add_verse_range(verse_range):

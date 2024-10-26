@@ -2,10 +2,59 @@
     "name": "Al-Forqan Development Environment",
     "image": "mcr.microsoft.com/devcontainers/python:3.11",
 
-    // Install required system dependencies for Manim and other packages
-    "updateContentCommand": "sudo apt-get update && sudo apt-get install -y pkg-config cmake build-essential libcairo2-dev python3-dev libffi-dev ffmpeg libpango1.0-dev libglib2.0-dev libpangocairo-1.0-0",
-    
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "streetsidesoftware.code-spell-checker",
+                "charliermarsh.ruff"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "[python]": {
+                    "editor.defaultFormatter": "charliermarsh.ruff",
+                    "editor.formatOnSave": true,
+                    "editor.codeActionsOnSave": {
+                        "source.fixAll": "always",
+                        "source.organizeImports": "always"
+                    }
+                },
+                "editor.rulers": [
+                    140
+                ],
+                "files.trimTrailingWhitespace": true
+            }
+        }
+    },
+
+    // System dependencies
+    "updateContentCommand": "sudo apt-get update && sudo apt-get install -y pkg-config cmake build-essential libcairo2-dev python3-dev libffi-dev ffmpeg libpango1.0-dev libglib2.0-dev libpangocairo-1.0-0 libegl1 libegl-dev libgl1-mesa-dev libgl1-mesa-glx libgles2-mesa-dev xvfb mesa-utils x264 libx264-dev",
+
+    // Install Python packages and ruff
     "postCreateCommand": "python -m pip install --upgrade pip && python -m pip install -r requirements.txt",
+
+    "remoteEnv": {
+        "PYTHONPATH": "${containerWorkspaceFolder}",
+        "DISPLAY": ":99",
+        "LIBGL_ALWAYS_INDIRECT": "1",
+        "MESA_GL_VERSION_OVERRIDE": "3.3",
+        "STREAMLIT_SERVER_HEADLESS": "true", // disable prompts when running streamlit for the first time
+    },
+
+    // Start virtual display with Quad HD resolution and launch Streamlit
+    "postStartCommand": "sudo Xvfb :99 -screen 0 2560x1440x24 -ac +extension GLX +render -noreset > /dev/null 2>&1 & sleep 2 && streamlit run app.py &",
+
+
+    "portsAttributes": {
+        "8501": {
+            "label": "Streamlit",
+            "onAutoForward": "notify"
+        }
+    },
+    "forwardPorts": [
+        8501
+    ],
 
     "features": {
         "ghcr.io/devcontainers/features/git:1": {},

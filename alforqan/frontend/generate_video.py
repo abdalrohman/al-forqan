@@ -11,6 +11,7 @@ import shutil
 from alforqan.backend.core.backgrounds import BackgroundStyle
 from alforqan.backend.core.color_scheme import ColorScheme
 from alforqan.backend.core.quran_manim_scene import QuranVerseScene
+from alforqan.backend.utils.font_helper import FontHelper
 from alforqan.frontend.custom_component.status import *
 
 from manim import ORIGIN
@@ -44,6 +45,11 @@ def generate_video(
             if not visualization_config:
                 show_error("Can't continue: visual settings not set")
                 return False
+
+            # Ensure the font installed on the system before enter the scene
+            # Important step before generate the video
+            FontHelper(app_config.get("fonts.font_path")).install()
+            FontHelper(app_config.get("fonts.font_info_path")).install()
 
             # Create and render scene
             scene = QuranVerseScene(

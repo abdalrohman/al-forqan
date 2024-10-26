@@ -20,6 +20,8 @@ Requirements:
 
 from __future__ import annotations
 
+import manimpango
+
 __all__ = ["QuranVerseScene"]
 
 from datetime import datetime
@@ -228,13 +230,37 @@ class QuranVerseScene(BaseBackgroundScene):
     def create_text_mobject(self, text: str, font_size: int, is_verse: bool = True) -> Text:
         """Create a Text mobject with proper font handling."""
         color = self.color_scheme[-1]  # Use the last color in the scheme for text
-        font_path = self.font_path if is_verse else self.font_path_info
-        font_helper = FontHelper(str(font_path))
-        if self.font_path:
-            with register_font(font_path):
-                normalized_text = font_helper.process_text(text) if font_helper else text
-                return Text(normalized_text, font=font_helper.get_font_name(), font_size=font_size, color=color)
-        else:
+
+        try:
+            font_path = self.font_path if is_verse else self.font_path_info
+
+            # Initialize font helper and process text
+            font_helper = FontHelper(str(font_path))
+
+            # Check and install font if needed
+            if not font_helper.is_installed():
+                logger.info("Installing font", font_path=font_path)
+                if not font_helper.install():
+                    logger.warning("Failed to install font, falling back to default", font_path=font_path, is_verse=is_verse)
+                    return Text(text, font_size=font_size, color=color)
+
+            # Get font name and process text
+            font_name = font_helper.get_font_name()
+            if not font_name:
+                logger.warning("Could not determine font name, falling back to default", font_path=font_path, is_verse=is_verse)
+                return Text(text, font_size=font_size, color=color)
+
+            normalized_text = font_helper.process_text(text)
+
+            return Text(
+                normalized_text,
+                font=font_name,
+                font_size=font_size,
+                color=color,
+            )
+        except Exception as e:
+            logger.exception("Error creating text mobject with custom font", error=str(e), font_path=font_path, is_verse=is_verse)
+            # Fallback to default font if no custom font is available
             return Text(text, font_size=font_size, color=color)
 
     def calculate_average_char_width(self, text: str) -> float:
@@ -246,7 +272,8 @@ class QuranVerseScene(BaseBackgroundScene):
             pygame.font.init()  # initialize only the font module.
             font = pygame.font.Font(self.font_path, self.font_size)
             # total_width = sum(font.render(char, True, (0, 0, 0)).get_width() for char in text)
-            total_width = sum(font.size(char)[0] for char in text)  # This is more efficient as it doesn't need to render the text.
+            # This is more efficient as it doesn't need to render the text.
+            total_width = sum(font.size(char)[0] for char in text)
             average_width = total_width / len(text)
             pygame.quit()
         except Exception as e:
@@ -270,7 +297,7 @@ class QuranVerseScene(BaseBackgroundScene):
 
     def create_verse_info(self) -> Text:
         """Create a Text mobject for the verse information."""
-        verse_info = self.create_text_mobject(self.verse_info, self.info_font_size, False)
+        verse_info = self.create_text_mobject(self.verse_info, self.info_font_size, is_verse=False)
 
         margins = {"widescreen": 0.1, "vertical": 0.15, "square": 0.12}
         bottom_margin = config.frame_height * margins.get(self.screen_type, 0.1)

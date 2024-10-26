@@ -21,6 +21,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import os
+from pathlib import Path
+import platform
+import shutil
+import subprocess
 
 from fontTools.ttLib import TTFont
 import structlog
@@ -152,7 +156,10 @@ class FontHelper:
             char_details = [{"char": char, "unicode": f"U+{ord(char):04X}"} for char in unsupported_chars]
 
             logger.warning(
-                "Unsupported characters detected", text_length=len(text), unsupported_count=len(unsupported_chars), characters=char_details
+                "Unsupported characters detected",
+                text_length=len(text),
+                unsupported_count=len(unsupported_chars),
+                characters=char_details,
             )
 
         cleaned_text = self.remove_unsupported_characters(text)
@@ -165,3 +172,108 @@ class FontHelper:
         )
 
         return cleaned_text
+
+    def _install_font_to_system(self) -> bool:
+        """Internal method to handle font installation based on the operating system."""
+        system = platform.system().lower()
+        source_path = Path(self.font_path)
+
+        try:
+            if system == "windows":
+                font_dir = Path(os.environ["WINDIR"]) / "Fonts"
+                dest_path = font_dir / source_path.name
+                shutil.copy2(source_path, dest_path)
+                subprocess.run(
+                    [  # noqa: S603, S607
+                        "reg",
+                        "add",
+                        r"HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts",
+                        "/v",
+                        source_path.stem,
+                        "/t",
+                        "REG_SZ",
+                        "/d",
+                        str(dest_path),
+                        "/f",
+                    ],
+                    check=True,
+                )
+
+            elif system == "darwin":  # macOS
+                font_dir = Path.home() / "Library" / "Fonts"
+                os.makedirs(font_dir, exist_ok=True)
+                shutil.copy2(source_path, font_dir / source_path.name)
+
+            else:  # Linux
+                font_dir = Path.home() / ".local" / "share" / "fonts"
+                os.makedirs(font_dir, exist_ok=True)
+                shutil.copy2(source_path, font_dir / source_path.name)
+                subprocess.run(["fc-cache", "-f"], check=True)  # noqa: S603, S607
+
+            logger.info("Font installed successfully", path=self.font_path, system=system, font_name=self.get_font_name())
+
+        except Exception as e:
+            logger.exception("Failed to install font", path=self.font_path, error=str(e), error_type=type(e).__name__)
+            return False
+
+        return True
+
+    def _check_font_installation(self, font_name: str) -> bool:
+        """Internal method to check font installation status."""
+        system = platform.system().lower()
+
+        try:
+            if system == "windows":
+                result = subprocess.run(
+                    ["reg", "query", r"HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts", "/f", font_name],
+                    capture_output=True,
+                    check=False,
+                )  # noqa: S603, S607
+                return result.returncode == 0
+
+            elif system == "linux":
+                result = subprocess.run(["fc-list", ":family"], capture_output=True, text=True, check=False)  # noqa: S603, S607
+                return any(font_name.lower() in line.lower() for line in result.stdout.splitlines())
+
+            else:  # macOS
+                font_dir = Path.home() / "Library" / "Fonts"
+                system_fonts = Path("/Library/Fonts")
+                return any(font_dir.glob(f"*{font_name}*")) or any(system_fonts.glob(f"*{font_name}*"))
+
+        except Exception as e:
+            logger.exception("Error checking font installation", font_name=font_name, error=str(e), error_type=type(e).__name__)
+            return False
+
+    def is_installed(self) -> bool:
+        """
+        Check if the current font is installed in the system.
+
+        :return: True if font is installed, False otherwise
+        """
+        font_name = self.get_font_name()
+        if font_name is None:
+            logger.error("Cannot check installation: unable to determine font name")
+            return False
+
+        return self._check_font_installation(font_name)
+
+    def install(self) -> bool:
+        """
+        Install the currently loaded font to the system.
+
+        :return: True if installation successful, False otherwise
+        """
+        try:
+            font_name = self.get_font_name()
+            if font_name is None:
+                logger.error("Cannot install font: unable to determine font name")
+                return False
+
+            if self.is_installed():
+                logger.info("Font is already installed", font_name=font_name)
+                return True
+
+            return self._install_font_to_system()
+        except Exception as e:
+            logger.exception("Failed to install font", error=str(e), error_type=type(e).__name__)
+            return False
